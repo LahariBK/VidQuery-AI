@@ -68,16 +68,16 @@ The application also provides transcript analysis, dataset visualization, model 
               ---------------------
               |                   |
               v                   |
-         USER QUESTION             |
+         USER QUESTION            |
               |                   |
               v                   |
-         QUERY EMBEDDING            |
+         QUERY EMBEDDING          |
               |                   |
               v                   |
-        FAISS SIMILARITY SEARCH    |
+        FAISS SIMILARITY SEARCH   |
               |                   |
               v                   |
-       TOP-4 RETRIEVED CHUNKS <-----
+       TOP-4 RETRIEVED CHUNKS <----
               |
               v
        RETRIEVED CONTEXT
