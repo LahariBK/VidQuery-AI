@@ -1,93 +1,178 @@
-# 🎥 YouTube Multilingual RAG Chatbot
+# 🎥 VidQuery AI – YouTube Video RAG Chatbot
 
-A Retrieval-Augmented Generation (RAG) based chatbot that allows users to ask questions about any YouTube video. The application automatically extracts video transcripts, creates semantic chunks, generates embeddings, stores them in a FAISS vector database, and uses an Ollama LLM to answer user questions.
+**Ask questions. Retrieve context. Discover knowledge from YouTube videos.**
+
+VidQuery AI is an intelligent Retrieval-Augmented Generation (RAG) chatbot that enables users to ask natural-language questions about YouTube videos and receive context-based answers.
+
+The application extracts available YouTube transcripts, divides them into manageable text chunks, generates semantic embeddings using Sentence Transformers, and stores the embeddings in a FAISS vector index. When a user asks a question, the system retrieves relevant transcript passages and uses a locally hosted Large Language Model (LLM) through Ollama to generate an answer.
+
+The application also provides transcript analysis, dataset visualization, model comparison, and evaluation capabilities.
 
 ---
 
 ## 🚀 Features
 
-- 📺 Load any YouTube video using its URL
-- 🌍 Supports multiple transcript languages
-- 📝 Automatic transcript extraction
-- ✂️ Intelligent transcript chunking
-- 🔍 Semantic search using FAISS
-- 🧠 Sentence Transformer embeddings
-- 🤖 Local LLM inference using Ollama (Phi-3 Mini)
-- 💬 Interactive Streamlit interface
-- 📚 Displays retrieved transcript sources with timestamps
+- 📺 Load YouTube videos using their URLs.
+- 🌍 Process available transcript languages, depending on video transcript availability.
+- 📝 Automatic YouTube transcript extraction.
+- ✂️ Transcript chunking and preprocessing.
+- 🧠 Semantic embeddings using Sentence Transformers.
+- 🔍 Similarity-based retrieval using FAISS.
+- 🤖 Local LLM inference using Ollama.
+- 💬 Interactive chatbot interface built with Streamlit.
+- ⏱️ Retrieved transcript sources with timestamps.
+- 📊 Dataset and preprocessing dashboard.
+- 📈 Model comparison between Phi-3 Small Context and Qwen 2.5 0.5B.
+- 📋 RAG evaluation using labelled question-answer examples.
+- 📉 Performance analysis using Precision, Recall, F1-score, and response time.
+- 🔎 Manual grounding review to examine whether generated answers are supported by retrieved evidence.
 
 ---
 
 ## 🛠️ Tech Stack
 
 | Component | Technology |
-|------------|------------|
+|---|---|
+| Programming Language | Python |
 | Frontend | Streamlit |
-| Language | Python |
 | Transcript Extraction | youtube-transcript-api |
-| Embedding Model | sentence-transformers (all-MiniLM-L6-v2) |
+| Embedding Model | all-MiniLM-L6-v2 |
+| Embedding Framework | Sentence Transformers |
 | Vector Database | FAISS |
-| LLM | Ollama (phi3:mini) |
-| Retrieval | RAG |
+| Language Model Runtime | Ollama |
+| Language Models | Phi-3 Small Context, Qwen 2.5 0.5B |
+| Data Processing | Pandas, NumPy |
+| Retrieval Technique | Dense Vector Similarity Search |
+| NLP Architecture | Retrieval-Augmented Generation (RAG) |
+
+---
+
+## 🏗️ System Architecture
+
+```text
+                 YOUTUBE VIDEO URL
+                         |
+                         v
+               TRANSCRIPT EXTRACTION
+                         |
+                         v
+                 TEXT CHUNKING
+                         |
+                         v
+              SENTENCE TRANSFORMERS
+                 EMBEDDING MODEL
+                         |
+                         v
+                  FAISS INDEX
+                         |
+              ---------------------
+              |                   |
+              v                   |
+         USER QUESTION             |
+              |                   |
+              v                   |
+         QUERY EMBEDDING            |
+              |                   |
+              v                   |
+        FAISS SIMILARITY SEARCH    |
+              |                   |
+              v                   |
+       TOP-4 RETRIEVED CHUNKS <-----
+              |
+              v
+       RETRIEVED CONTEXT
+              |
+              v
+       OLLAMA LANGUAGE MODEL
+              |
+              v
+        GENERATED ANSWER
+              |
+              v
+     ANSWER + SOURCE TIMESTAMPS
+
+
+       SEPARATE EVALUATION WORKFLOW
+                    |
+                    v
+        LABELLED EVALUATION DATASET
+                    |
+                    v
+          MODEL COMPARISON
+                    |
+                    v
+       PRECISION / RECALL / F1
+                    |
+                    v
+           RESPONSE TIME
+                    |
+                    v
+          GROUNDING REVIEW
+```
 
 ---
 
 ## 📂 Project Structure
 
-```
-YouTube-RAG/
+```text
+YouTube-Video-RAG-Chatbot/
 │
 ├── app.py
+├── config.py
+├── requirements.txt
 │
-├── data/
-│   └── transcripts/
+├── models/
+│   └── llm.py
 │
 ├── utils/
 │   ├── youtube_loader.py
-│   ├── helper.py
 │   ├── chunking.py
 │   ├── embeddings.py
 │   ├── vector_db.py
 │   └── rag.py
 │
-├── requirements.txt
+├── vectorstore/
+│   ├── faiss.index
+│   └── chunks.pkl
+│
+├── data/
+│
+├── dataset_dashboard.py
+├── rag_evaluation.py
+├── model_comparison.py
+├── evaluation_dataset.csv
 │
 └── README.md
 ```
 
+*Note: The structure above highlights the main project modules. Update it if your local folder contains additional files or different folder names.*
+
 ---
 
-## ⚙️ Installation
+## ⚙️ Installation and Setup
 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/YouTube-RAG.git
-
-cd YouTube-RAG
+git clone YOUR_GITHUB_REPOSITORY_URL
+cd YouTube-Video-RAG-Chatbot
 ```
-
----
 
 ### 2. Create a virtual environment
 
-Windows
+**Windows:**
 
-```bash
-python -m venv venv
-
-venv\Scripts\activate
+```powershell
+python -m venv .venv
+.venv\Scripts\activate
 ```
 
-Linux / macOS
+**Linux / macOS:**
 
 ```bash
-python3 -m venv venv
-
-source venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 ```
-
----
 
 ### 3. Install dependencies
 
@@ -95,179 +180,171 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
----
-
 ### 4. Install Ollama
 
-Download Ollama from
+Download Ollama from:
 
 https://ollama.com/
 
-Pull the Phi-3 Mini model
+Pull the language models used in the project:
 
 ```bash
-ollama pull phi3:mini
+ollama pull phi3-smallctx:latest
+ollama pull qwen2.5:0.5b
 ```
 
-Start Ollama
+Ensure that the Ollama service is running before launching the application.
 
-```bash
-ollama serve
+### 5. Configure the language model
+
+For Windows PowerShell:
+
+```powershell
+$env:OLLAMA_MODEL = "phi3-smallctx:latest"
 ```
 
----
-
-### 5. Run the application
+### 6. Run the application
 
 ```bash
 streamlit run app.py
 ```
 
----
+The application will be available at:
 
-## 📖 How It Works
-
-### Step 1
-
-Paste any YouTube video URL.
-
-↓
-
-### Step 2
-
-The application extracts the available transcript.
-
-↓
-
-### Step 3
-
-Transcript is divided into semantic chunks.
-
-↓
-
-### Step 4
-
-Embeddings are generated using Sentence Transformers.
-
-↓
-
-### Step 5
-
-Embeddings are stored in a FAISS vector database.
-
-↓
-
-### Step 6
-
-For every user question,
-
-- Similar transcript chunks are retrieved.
-- Retrieved chunks are sent to the LLM.
-- Ollama generates an answer grounded in the video content.
-
----
-
-## 🧠 Architecture
-
-```
-YouTube URL
-      │
-      ▼
-Transcript Extraction
-      │
-      ▼
-Transcript Chunking
-      │
-      ▼
-Sentence Embeddings
-      │
-      ▼
-FAISS Vector Store
-      │
-      ▼
-User Question
-      │
-      ▼
-Similarity Search
-      │
-      ▼
-Retrieved Context
-      │
-      ▼
-Ollama (Phi3 Mini)
-      │
-      ▼
-Generated Answer
+```text
+http://localhost:8501
 ```
 
 ---
 
-## 📦 Required Packages
+## 🔄 How VidQuery AI Works
 
-- streamlit
-- youtube-transcript-api
-- sentence-transformers
-- faiss-cpu
-- requests
-- numpy
+**Step 1: Video Input**
 
-Install using
+The user provides a YouTube video URL through the Streamlit interface.
 
-```bash
-pip install -r requirements.txt
-```
+**Step 2: Transcript Extraction**
+
+The application extracts the available transcript and associated timing information.
+
+**Step 3: Text Chunking**
+
+The transcript is divided into smaller text chunks to support efficient retrieval.
+
+**Step 4: Embedding Generation**
+
+The all-MiniLM-L6-v2 Sentence Transformer converts transcript chunks into 384-dimensional numerical vectors.
+
+**Step 5: Vector Indexing**
+
+The generated embeddings are stored in a FAISS IndexFlatL2 vector index.
+
+**Step 6: Question Processing**
+
+The user's question is converted into an embedding using the same embedding model.
+
+**Step 7: Semantic Retrieval**
+
+FAISS retrieves the four nearest transcript chunks based on squared Euclidean distance.
+
+**Step 8: Answer Generation**
+
+The retrieved context and user question are passed to the selected Ollama language model.
+
+**Step 9: Source Display**
+
+The chatbot displays the generated response along with retrieved transcript sources and timestamps.
 
 ---
 
-## 💡 Example
+## 📊 Model Evaluation and Comparison
 
-### Input
+VidQuery AI includes an evaluation framework to compare two locally hosted language models:
 
-```
-https://www.youtube.com/watch?v=VIDEO_ID
-```
+- **Phi-3 Small Context:** `phi3-smallctx:latest`
+- **Qwen 2.5 0.5B:** `qwen2.5:0.5b`
 
-Question
+Both models are evaluated using the same questions and retrieved context to support a fair comparison.
 
-```
-What is the main topic discussed in the video?
-```
+### Evaluation Metrics
 
-Output
+| Metric | Purpose |
+|---|---|
+| Precision | Measures the correctness of answerable predictions |
+| Recall | Measures how many answerable questions are identified |
+| F1-score | Combines precision and recall |
+| Average Response Time | Measures model response speed |
+| Answer Token Recall | Measures overlap between expected and generated answer tokens |
+| Grounding Review | Examines whether generated responses are supported by retrieved evidence |
 
-```
-The video explains Retrieval-Augmented Generation (RAG), including transcript extraction,
-semantic search, FAISS indexing, and answer generation using an LLM.
-```
+The evaluation dashboard also provides detailed results, generated responses, and model comparison visualizations.
+
+*The current evaluation dataset is small and provides preliminary experimental results rather than a definitive assessment of general performance.*
 
 ---
 
-## 📸 Screenshots
-<img width="1917" height="922" alt="image" src="https://github.com/user-attachments/assets/ae043f47-f15e-482f-b00c-e3f5cb7dea98" />
-<img width="1912" height="912" alt="image" src="https://github.com/user-attachments/assets/c8cf89af-bc50-4d0a-8d32-f05615932eb2" />
+## 📸 Application Screenshots
 
+Add your actual application screenshots to a folder named `screenshots/` in the repository.
+
+Suggested images:
+
+1. Home page and YouTube URL input.
+2. Dataset and preprocessing dashboard.
+3. Model comparison metrics.
+4. Average response-time comparison.
+5. Chatbot question, answer, and retrieved sources.
+6. Unanswerable question and fallback response.
+7. Detailed model comparison results.
+
+After adding the screenshots, you can display them using:
+
+```markdown
+![VidQuery AI Home Page](screenshots/01_home_page.png)
+
+![Dataset Dashboard](screenshots/02_dataset_preprocessing.png)
+
+![Model Metrics](screenshots/03_model_metrics.png)
+
+![Response Time](screenshots/04_response_time.png)
+
+![Question Answering](screenshots/05_question_answer_sources.png)
+```
 
 ---
 
 ## 🔮 Future Improvements
 
-- 🎙️ Audio transcription for videos without subtitles
-- 🌐 Translation support
-- 📄 PDF summary generation
-- 💾 Persistent FAISS database
-- 🖥️ Multi-video chat
-- 📱 Responsive UI
-- 🔊 Voice-based interaction
+- 🎙️ Speech-to-text transcription for videos without available transcripts.
+- 🌐 Expanded multilingual question answering and translation.
+- 📄 Automatic video summary and PDF report generation.
+- 💾 Improved persistent vector storage.
+- 🎞️ Multi-video question answering.
+- 🎯 Improved retrieval and context-ranking strategies.
+- 🔎 Automated answer-grounding evaluation.
+- 🖥️ Enhanced user interface and accessibility.
 
 ---
 
-## 👨‍💻 Author
+## 👩‍💻 Author
 
-Praneetha 
+**Lahari B K**
 
-B.Tech Artificial Intelligence & Machine Learning
+B.E. Artificial Intelligence and Machine Learning  
+B.M.S. College of Engineering, Bengaluru
 
-BMS College of Engineering
+**Project:** VidQuery AI – YouTube Video RAG Chatbot
+
+**Technologies:** Python | NLP | RAG | FAISS | Sentence Transformers | Ollama | Streamlit
 
 ---
+
+## 📚 References
+
+- [Sentence Transformers](https://www.sbert.net/)
+- [FAISS](https://github.com/facebookresearch/faiss)
+- [Ollama](https://ollama.com/)
+- [Streamlit](https://streamlit.io/)
+- [Hugging Face](https://huggingface.co/)
+- [YouTube Transcript API](https://pypi.org/project/youtube-transcript-api/)
 

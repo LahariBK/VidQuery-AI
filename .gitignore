@@ -1,4 +1,11 @@
-venv/
+.venv/
 __pycache__/
-.env
 *.pyc
+.env
+
+vectorstore/
+data/transcripts/
+
+app_before_evaluation.py
+app_before_model_comparison.py
+model_comparison_before_grounding.py
